@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trufflehog-scan
+spec:
+  ttlSecondsAfterFinished: 30
+  template:
+    spec:
+      containers:
+      - name: trufflehog-scan
+        image: tray3rd/trufflehog:test
+        command: ["python3", "/usr/bin/run-trufflehog.py"]
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: repo-volume
+          mountPath: /repos
+        - name: output-volume
+          mountPath: /output
+      restartPolicy: Never
+      volumes:
+      - name: repo-volume
+        emptyDir: {}
+      - name: output-volume
+        hostPath:
+          path: /root/Jobs/trufflehog-output

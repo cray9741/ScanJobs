@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trivy-scan
+spec:
+  ttlSecondsAfterFinished: 30
+  template:
+    spec:
+      containers:
+      - name: trivy-scan
+        image: your-built-trivy-image:latest  # Replace with your built Trivy image
+        command: [ "python3", "/app/entrypoint.py"]
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: repo-volume
+          mountPath: /repos
+        - name: output-volume
+          mountPath: /output
+      restartPolicy: Never
+      volumes:
+      - name: repo-volume
+        emptyDir: {}
+      - name: output-volume
+        hostPath:
+          path: /root/Jobs/trivy-output  # Adjust the path as necessary

@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kubescape-upload-job
+spec:
+  ttlSecondsAfterFinished: 30 # This will keep the job for 1 hour after completion
+  template:
+    spec:
+      containers:
+      - name: kubescape-upload
+        image: tray3rd/s3-upload:latest
+        imagePullPolicy: Always
+        env:
+        - name: SEARCH_DIRECTORY
+          value: "/kubescape/output"
+        - name: S3_BUCKET
+          value: "sec-tooling-backend-tools-results-87238225"
+        - name: S3_FOLDER
+          value: "kubescape"
+        volumeMounts:
+        - name: kubescape-output
+          mountPath: /kubescape/output
+      restartPolicy: Never
+      volumes:
+      - name: kubescape-output
+        hostPath:
+          path: /root/Jobs/kubescape-output  # Update this to your current directory path

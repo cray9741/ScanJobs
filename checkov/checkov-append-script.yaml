@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: checkov-append-script
+data:
+  rename_json_files.py: |
+    import os
+    import json
+
+    def add_repo_owner(data, owner):
+        if isinstance(data, dict):
+            items = list(data.items())  # Create a list of items to iterate over
+            for key, value in items:
+                if key == "check_id":
+                    data["Repo Owner"] = owner
+                elif isinstance(value, dict) or isinstance(value, list):
+                    add_repo_owner(value, owner)
+        elif isinstance(data, list):
+            for item in data:
+                add_repo_owner(item, owner)
+
+    def rename_and_modify_json_files():
+        # Get the current working directory
+        current_dir = os.getcwd()
+
+        # Walk through the directory tree
+        for root, dirs, files in os.walk(current_dir):
+            for file in files:
+                if file.endswith('.json'):
+                    # Get the full file path
+                    file_path = os.path.join(root, file)
+
+                    # Get the parent directory name
+                    parent_dir = os.path.basename(root)
+
+                    # Construct the new file name
+                    new_file_name = f"{parent_dir}.json"
+                    new_file_path = os.path.join(root, new_file_name)
+
+                    # Rename the file
+                    os.rename(file_path, new_file_path)
+                    print(f'Renamed {file_path} to {new_file_path}')
+
+                    # Modify the JSON content
+                    with open(new_file_path, 'r') as json_file:
+                        data = json.load(json_file)
+
+                    # Add 'Repo Owner' to each entry in the data
+                    add_repo_owner(data, parent_dir)
+
+                    # Write the updated JSON back to the file
+                    with open(new_file_path, 'w') as json_file:
+                        json.dump(data, json_file, indent=4)
+                    print(f'Updated JSON content in {new_file_path}')
+
+    if __name__ == "__main__":
+        rename_and_modify_json_files()

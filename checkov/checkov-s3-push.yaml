@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: checkov-upload-job
+spec:
+  ttlSecondsAfterFinished: 30 # This will keep the job for 1 hour after completion
+  template:
+    spec:
+      containers:
+      - name: checkov-upload
+        image: tray3rd/s3-upload:latest
+        imagePullPolicy: Always
+        env:
+        - name: SEARCH_DIRECTORY
+          value: "/checkov/output"
+        - name: S3_BUCKET
+          value: "sec-tooling-backend-tools-results-87238225"
+        - name: S3_FOLDER
+          value: "checkov"
+        volumeMounts:
+        - name: checkov-output
+          mountPath: /checkov/output
+      restartPolicy: Never
+      volumes:
+      - name: checkov-output
+        hostPath:
+          path: /root/Jobs/checkov-output  # Update this to your current directory path

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trufflehog-append-script
+data:
+  modify_json_files.py: |
+    import os
+    import json
+
+    def add_repo_name(data, repo_name):
+        if isinstance(data, dict):
+            data["Repo Owner"] = repo_name
+        elif isinstance(data, list):
+            for item in data:
+                add_repo_name(item, repo_name)
+
+    def modify_json_files():
+        # Get the current working directory
+        current_dir = os.getcwd()
+
+        # Walk through the directory tree
+        for root, dirs, files in os.walk(current_dir):
+            for file in files:
+                if file.endswith('.json'):
+                    # Get the full file path
+                    file_path = os.path.join(root, file)
+
+                    # Get the parent directory name
+                    parent_dir = os.path.basename(root)
+
+                    # Modify the JSON content
+                    with open(file_path, 'r') as json_file:
+                        data = [json.loads(line) for line in json_file]
+
+                    # Add 'repository' to each entry in the data
+                    for item in data:
+                        add_repo_name(item, parent_dir)
+
+                    # Write the updated JSON back to the file
+                    with open(file_path, 'w') as json_file:
+                        for item in data:
+                            json_file.write(json.dumps(item) + '\n')
+                    print(f'Updated JSON content in {file_path}')
+
+    if __name__ == "__main__":
+        modify_json_files()
