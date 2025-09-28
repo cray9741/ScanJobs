@@ -1,12 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: prowler-scan-s3-upload-job
+  generateName: prowler-scan-s3-upload-job-
 spec:
   ttlSecondsAfterFinished: 30
   template:
     spec:
-      serviceAccountName: scan-account
       containers:
       - name: prowler-scan-s3-upload-container
         image: tray3rd/prowler-scan-s3-upload:latest
@@ -14,11 +13,21 @@ spec:
         - name: S3_BUCKET
           value: "tools-bucket-cloudranger-30293812"
         - name: S3_FOLDER
-          value: "prowler"
+          value: "checkov"
         - name: AWS_DEFAULT_REGION
           value: "us-east-1"
         - name: SEARCH_DIRECTORY
           value: "/output"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: AWS_SECRET_ACCESS_KEY
         resources:
           requests:
             memory: "2Gi"
