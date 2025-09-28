@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-      - generateName: zaproxy-scan-s3-upload-container
+      - name: zaproxy-scan-s3-upload-container
         image: tray3rd/zaproxy-scan-s3-upload:latest
         env:
         - generateName: S3_BUCKET
