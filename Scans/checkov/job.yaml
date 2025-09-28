@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: checkov-scan-s3-upload-job
+  namespace: n8n
 spec:
   ttlSecondsAfterFinished: 30
   template:
