@@ -10,23 +10,23 @@ spec:
       - name: zaproxy-scan-s3-upload-container
         image: tray3rd/zaproxy-scan-s3-upload:latest
         env:
-        - generateName: S3_BUCKET
+        - name: S3_BUCKET
           value: "tools-bucket-cloudranger-30293812"
-        - generateName: S3_FOLDER
+        - name: S3_FOLDER
           value: "zaproxy"
-        - generateName: AWS_DEFAULT_REGION
+        - name: AWS_DEFAULT_REGION
           value: "us-east-1"
-        - generateName: SEARCH_DIRECTORY
+        - name: SEARCH_DIRECTORY
           value: "/output"
-        - generateName: AWS_ACCESS_KEY_ID
+        - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
-              generateName: aws-credentials
+              name: aws-credentials
               key: AWS_ACCESS_KEY_ID
-        - generateName: AWS_SECRET_ACCESS_KEY
+        - name: AWS_SECRET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              generateName: aws-credentials
+              name: aws-credentials
               key: AWS_SECRET_ACCESS_KEY
         resources:
           requests:
