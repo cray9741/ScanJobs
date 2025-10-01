@@ -13,7 +13,7 @@ spec:
         - generateName: S3_BUCKET
           value: "tools-bucket-cloudranger-30293812"
         - generateName: S3_FOLDER
-          value: "checkov"
+          value: "zaproxy"
         - generateName: AWS_DEFAULT_REGION
           value: "us-east-1"
         - generateName: SEARCH_DIRECTORY
